@@ -1,0 +1,15 @@
+# Python local environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Local backup files and notebooks
+*.bak
+*.ipynb
+raw_trend_data.csv.csv
+backend/
+
+# Local git and config
+.git/
+.vscode/
