@@ -121,24 +121,24 @@ Screenshots can be added to the `docs/images/` directory. See [`docs/images/READ
 
 ```mermaid
 flowchart TD
-    subgraph Data Layer
-        A["raw_trend_data.csv.csv\n(Source Dataset)"] -.->|"Exploratory Analysis"| B["EDA_.ipynb\n(Jupyter Notebook)"]
-        C["processed_trend_data.csv\n(Existing Dataset Artifact: 10,698 rows)"]
+    subgraph DATA["Data Layer"]
+        A["raw_trend_data.csv.csv<br/>(Historical Source Data)"] -.->|"Exploratory Analysis"| B["EDA_.ipynb<br/>(Jupyter Notebook)"]
+        C["processed_trend_data.csv<br/>(Preprocessed Dataset Artifact: 10,698 rows)"]
     end
 
-    subgraph Python Environment (Local)
-        C --> D["train_model.py\n(scikit-learn fit)"]
-        D --> E["isolation_forest.pkl\n(Joblib Model Binary)"]
-        E --> F["Streamlit Dashboard\n(dashboard.py / app.py)"]
-        E --> G["FastAPI Backend\n(backend/index.py)"]
+    subgraph PYTHON["Python Environment (Local)"]
+        C --> D["train_model.py<br/>(scikit-learn fit)"]
+        D --> E["isolation_forest.pkl<br/>(Joblib Model Binary)"]
+        E --> F["Streamlit Dashboard<br/>(dashboard.py / app.py)"]
+        E --> G["FastAPI Backend<br/>(backend/index.py)"]
     end
 
-    subgraph Production Environment (Vercel)
-        C --> H["src/data/dataset.json\n(Embedded JSON: 10,698 rows)"]
-        H --> I["Next.js Edge API Routes\n(/api/predict, /api/anomalies,\n/api/health, /api/insights)"]
-        H --> J["Next.js Dashboard Frontend\n(React 18 + TypeScript + Tailwind)"]
+    subgraph PROD["Production Environment (Vercel)"]
+        C --> H["src/data/dataset.json<br/>(Pre-scored JSON: 10,698 rows)"]
+        H --> I["Next.js Edge API Routes<br/>(Statistical Heuristic Inference)"]
+        H --> J["Next.js Dashboard Frontend<br/>(React 18 + TypeScript + Tailwind)"]
         I --> J
-        J --> K["Vercel Edge Production\n(trendpulse-anomaly-analytics.vercel.app)"]
+        J --> K["Vercel Edge Production<br/>(trendpulse-anomaly-analytics.vercel.app)"]
     end
 
     style C fill:#1e293b,stroke:#6366f1,color:#e2e8f0
