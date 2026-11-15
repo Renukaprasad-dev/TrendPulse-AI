@@ -102,18 +102,28 @@ The application is deployed on Vercel and serves the complete Next.js dashboard 
 
 ## Dashboard Screenshots
 
-Screenshots can be added to the `docs/images/` directory. See [`docs/images/README.md`](docs/images/README.md) for expected filenames and capture guidelines.
+Visual walk-through of the TrendPulse AI enterprise analytics platform.
 
-| Section | Expected Screenshot Path |
-| --- | --- |
-| Executive Overview | `docs/images/overview.png` |
-| Anomaly Detection | `docs/images/anomaly-detection.png` |
-| Trend Analysis | `docs/images/trend-analysis.png` |
-| Insights & Intelligence | `docs/images/insights.png` |
-| Data Explorer | `docs/images/data-explorer.png` |
-| Model Performance | `docs/images/model-performance.png` |
-| ML Simulator | `docs/images/ml-simulator.png` |
-| Settings | `docs/images/settings.png` |
+### Executive Overview Dashboard
+![TrendPulse AI Executive Overview Dashboard](docs/images/overview.png)
+
+### Anomaly Detection Audit Log
+![TrendPulse AI Isolation Forest Anomaly Detection Audit Log](docs/images/anomaly-detection.png)
+
+### Trend & Time-Series Dynamics
+![TrendPulse AI Trend and Time-Series Analytics](docs/images/trend-analysis.png)
+
+### Real-Time ML Simulator
+![TrendPulse AI Real-time Isolation Forest Anomaly Simulator](docs/images/ml-simulator.png)
+
+### Additional Modules
+
+| Module | Status | Planned File Path |
+| :--- | :--- | :--- |
+| **Insights & Intelligence** | *Pending capture* | `docs/images/insights.png` |
+| **Data Explorer** | *Pending capture* | `docs/images/data-explorer.png` |
+| **Model Performance** | *Pending capture* | `docs/images/model-performance.png` |
+| **System Settings** | *Pending capture* | `docs/images/settings.png` |
 
 ---
 
