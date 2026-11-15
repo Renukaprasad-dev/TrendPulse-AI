@@ -1,74 +1,105 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   PlayCircle,
   Sliders,
   CheckCircle2,
   AlertTriangle,
   Flame,
-  ArrowRight,
   Sparkles,
   RefreshCw,
+  Info,
+  Scale,
 } from "lucide-react";
 
 export default function PredictSimulator() {
-  const [postCount, setPostCount] = useState<number>(3);
-  const [likes, setLikes] = useState<number>(4500);
-  const [shares, setShares] = useState<number>(1800);
-  const [engagementRate, setEngagementRate] = useState<number>(0.15);
+  const [postCount, setPostCount] = useState<number>(1);
+  const [likes, setLikes] = useState<number>(2400);
+  const [shares, setShares] = useState<number>(950);
+  const [engagementRate, setEngagementRate] = useState<number>(0.14);
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<any>(null);
 
-  const handlePredict = async () => {
+  const evaluateModel = async (
+    pCount: number,
+    pLikes: number,
+    pShares: number,
+    pEng: number
+  ) => {
     setLoading(true);
     try {
       const res = await fetch("/api/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          post_count: Number(postCount),
-          likes: Number(likes),
-          shares: Number(shares),
-          engagement_rate: Number(engagementRate),
+          post_count: pCount,
+          likes: pLikes,
+          shares: pShares,
+          engagement_rate: pEng,
         }),
       });
       const data = await res.json();
       setResult(data);
     } catch (err) {
-      console.error(err);
+      console.error("Predict error:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // Pre-populate evaluation immediately on mount so the card is never empty
+  useEffect(() => {
+    evaluateModel(1, 2400, 950, 0.14);
+  }, []);
+
+  const handlePredict = () => {
+    evaluateModel(
+      Number(postCount),
+      Number(likes),
+      Number(shares),
+      Number(engagementRate)
+    );
+  };
+
   const handlePreset = (preset: "normal" | "viral" | "volume" | "extreme") => {
+    let pC = 1;
+    let lk = 2400;
+    let sh = 950;
+    let eg = 0.14;
+
     switch (preset) {
       case "normal":
-        setPostCount(1);
-        setLikes(250);
-        setShares(80);
-        setEngagementRate(0.04);
+        pC = 1;
+        lk = 2400;
+        sh = 950;
+        eg = 0.14;
         break;
       case "viral":
-        setPostCount(2);
-        setLikes(8500);
-        setShares(3200);
-        setEngagementRate(0.45);
+        pC = 2;
+        lk = 9500;
+        sh = 3400;
+        eg = 0.45;
         break;
       case "volume":
-        setPostCount(4);
-        setLikes(1200);
-        setShares(400);
-        setEngagementRate(0.08);
+        pC = 4;
+        lk = 2100;
+        sh = 800;
+        eg = 0.09;
         break;
       case "extreme":
-        setPostCount(3);
-        setLikes(14000);
-        setShares(4800);
-        setEngagementRate(0.92);
+        pC = 3;
+        lk = 14500;
+        sh = 5100;
+        eg = 1.85;
         break;
     }
+
+    setPostCount(pC);
+    setLikes(lk);
+    setShares(sh);
+    setEngagementRate(eg);
+    evaluateModel(pC, lk, sh, eg);
   };
 
   return (
@@ -87,11 +118,11 @@ export default function PredictSimulator() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-slate-400">Presets:</span>
           <button
             onClick={() => handlePreset("normal")}
-            className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition"
+            className="px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/20 transition"
           >
             Normal Baseline
           </button>
@@ -120,17 +151,28 @@ export default function PredictSimulator() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Controls Card */}
         <div className="p-6 rounded-2xl bg-[#0f172a]/70 border border-[#1e293b] shadow-xl space-y-5">
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <Sliders className="w-4 h-4 text-indigo-400" />
-            <h3 className="text-sm font-bold text-white">Input Feature Parameters</h3>
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-indigo-400" />
+              <h3 className="text-sm font-bold text-white">Input Feature Parameters</h3>
+            </div>
+            <span className="text-[11px] text-slate-400">Sliders & Direct Inputs</span>
           </div>
 
           <div className="space-y-4 text-xs">
             {/* Post Count */}
             <div>
-              <div className="flex justify-between text-slate-300 font-semibold mb-1.5">
+              <div className="flex justify-between items-center text-slate-300 font-semibold mb-1.5">
                 <span>Post Count (`post_count`):</span>
-                <span className="font-mono text-indigo-400">{postCount}</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={5}
+                  step={1}
+                  value={postCount}
+                  onChange={(e) => setPostCount(Number(e.target.value))}
+                  className="w-20 px-2 py-0.5 text-right font-mono bg-slate-900 border border-slate-700 rounded text-indigo-400 focus:outline-none focus:border-indigo-500"
+                />
               </div>
               <input
                 type="range"
@@ -141,14 +183,22 @@ export default function PredictSimulator() {
                 onChange={(e) => setPostCount(Number(e.target.value))}
                 className="w-full accent-indigo-500"
               />
-              <span className="text-[10px] text-slate-500">Historical range: 1 to 4 posts/slot</span>
+              <span className="text-[10px] text-slate-500">Historical range: 1 to 4 | 95th %ile: 2 posts/hr</span>
             </div>
 
             {/* Likes */}
             <div>
-              <div className="flex justify-between text-slate-300 font-semibold mb-1.5">
+              <div className="flex justify-between items-center text-slate-300 font-semibold mb-1.5">
                 <span>Likes Volume (`likes`):</span>
-                <span className="font-mono text-indigo-400">{likes.toLocaleString()}</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={18000}
+                  step={100}
+                  value={likes}
+                  onChange={(e) => setLikes(Number(e.target.value))}
+                  className="w-24 px-2 py-0.5 text-right font-mono bg-slate-900 border border-slate-700 rounded text-indigo-400 focus:outline-none focus:border-indigo-500"
+                />
               </div>
               <input
                 type="range"
@@ -159,14 +209,22 @@ export default function PredictSimulator() {
                 onChange={(e) => setLikes(Number(e.target.value))}
                 className="w-full accent-indigo-500"
               />
-              <span className="text-[10px] text-slate-500">Historical range: 0 to 16,235 likes</span>
+              <span className="text-[10px] text-slate-500">Historical range: 0 to 16,235 | 95th %ile: 5,452 likes</span>
             </div>
 
             {/* Shares */}
             <div>
-              <div className="flex justify-between text-slate-300 font-semibold mb-1.5">
+              <div className="flex justify-between items-center text-slate-300 font-semibold mb-1.5">
                 <span>Shares Volume (`shares`):</span>
-                <span className="font-mono text-indigo-400">{shares.toLocaleString()}</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={6000}
+                  step={50}
+                  value={shares}
+                  onChange={(e) => setShares(Number(e.target.value))}
+                  className="w-24 px-2 py-0.5 text-right font-mono bg-slate-900 border border-slate-700 rounded text-indigo-400 focus:outline-none focus:border-indigo-500"
+                />
               </div>
               <input
                 type="range"
@@ -177,25 +235,36 @@ export default function PredictSimulator() {
                 onChange={(e) => setShares(Number(e.target.value))}
                 className="w-full accent-indigo-500"
               />
-              <span className="text-[10px] text-slate-500">Historical range: 0 to 5,405 shares</span>
+              <span className="text-[10px] text-slate-500">Historical range: 0 to 5,405 | 95th %ile: 2,222 shares</span>
             </div>
 
             {/* Engagement Rate */}
             <div>
-              <div className="flex justify-between text-slate-300 font-semibold mb-1.5">
+              <div className="flex justify-between items-center text-slate-300 font-semibold mb-1.5">
                 <span>Engagement Rate (`engagement_rate`):</span>
-                <span className="font-mono text-indigo-400">{(engagementRate * 100).toFixed(1)}%</span>
+                <input
+                  type="number"
+                  min={0.001}
+                  max={5.0}
+                  step={0.01}
+                  value={engagementRate}
+                  onChange={(e) => setEngagementRate(Number(e.target.value))}
+                  className="w-20 px-2 py-0.5 text-right font-mono bg-slate-900 border border-slate-700 rounded text-indigo-400 focus:outline-none focus:border-indigo-500"
+                />
               </div>
               <input
                 type="range"
                 min={0.001}
-                max={1.5}
+                max={3.0}
                 step={0.01}
                 value={engagementRate}
                 onChange={(e) => setEngagementRate(Number(e.target.value))}
                 className="w-full accent-indigo-500"
               />
-              <span className="text-[10px] text-slate-500">Historical range: 0.2% to 32.2%</span>
+              <div className="flex justify-between text-[10px] text-slate-500">
+                <span>Ratio: {(engagementRate * 100).toFixed(1)}%</span>
+                <span>95th %ile: 82.0% (0.82)</span>
+              </div>
             </div>
           </div>
 
@@ -241,10 +310,10 @@ export default function PredictSimulator() {
                     )}
                     <div>
                       <p className="text-xs uppercase font-bold tracking-wider">
-                        Classification Result
+                        Prediction Classification
                       </p>
                       <h4 className="text-xl font-black text-white">
-                        {result.anomaly_status} ({result.prediction})
+                        {result.prediction_class || (result.is_anomaly ? "Outlier Class (-1)" : "Inlier Class (+1)")}
                       </h4>
                     </div>
                   </div>
@@ -263,16 +332,16 @@ export default function PredictSimulator() {
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
                     <span className="text-slate-400">Raw Decision Score</span>
-                    <p className="font-mono text-sm font-bold text-white mt-1">
-                      {result.decision_score}
+                    <p className={`font-mono text-sm font-bold mt-1 ${result.is_anomaly ? "text-rose-400" : "text-emerald-400"}`}>
+                      {result.decision_score > 0 ? `+${result.decision_score}` : result.decision_score}
                     </p>
                     <span className="text-[10px] text-slate-500">
-                      Negative = Outlier, Positive = Inlier
+                      Boundary: 0.0000 (&lt;0 = Anomaly, &ge;0 = Normal)
                     </span>
                   </div>
 
                   <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                    <span className="text-slate-400">Ensemble Consensus</span>
+                    <span className="text-slate-400">Ensemble Depth</span>
                     <p className="font-mono text-sm font-bold text-white mt-1">
                       100 iTrees
                     </p>
@@ -282,25 +351,36 @@ export default function PredictSimulator() {
                   </div>
                 </div>
 
-                {/* Explanation */}
+                {/* Severity Calculation Documentation */}
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs space-y-1">
+                  <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
+                    <Scale className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Severity Formula:</span>
+                  </div>
+                  <p className="font-mono text-[11px] text-purple-300">
+                    Severity = clamp(0, 100, Math.round(((0.20 - decision_score) / 0.38) * 100))
+                  </p>
+                  <p className="text-[10px] text-slate-400">
+                    Maps normal modal inliers (+0.20) to 0 and extreme outliers (-0.18) to 100.
+                  </p>
+                </div>
+
+                {/* Empirical Explanation */}
                 <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
-                  <p className="font-semibold text-slate-300 mb-1">Causal Explanation:</p>
+                  <p className="font-semibold text-slate-300 mb-1">Empirical Explanation:</p>
                   <p className="text-slate-400 leading-relaxed">{result.explanation}</p>
                 </div>
               </div>
             ) : (
               <div className="h-64 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-800 rounded-xl text-slate-500">
-                <Sliders className="w-8 h-8 text-slate-600 mb-2" />
-                <p className="text-xs font-medium text-slate-400">No active evaluation</p>
-                <p className="text-[11px] text-slate-500 mt-1 max-w-xs">
-                  Adjust the sliders on the left and click &quot;Evaluate with Isolation Forest&quot; or select one of the quick presets above.
-                </p>
+                <RefreshCw className="w-8 h-8 text-slate-600 mb-2 animate-spin" />
+                <p className="text-xs font-medium text-slate-400">Evaluating baseline...</p>
               </div>
             )}
           </div>
 
           <div className="pt-4 border-t border-slate-800 text-[11px] text-slate-500 flex items-center justify-between">
-            <span>Isolation Forest v1.0 • joblib binary</span>
+            <span>Isolation Forest v1.0 • 4 Features</span>
             <span className="text-indigo-400 font-mono">POST /api/predict</span>
           </div>
         </div>
